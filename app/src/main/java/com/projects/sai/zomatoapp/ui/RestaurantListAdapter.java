@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.projects.sai.zomatoapp.R;
 import com.projects.sai.zomatoapp.model.Restaurants;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -43,10 +44,13 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
 
     @Override
     public void onBindViewHolder(RestaurantListHolder holder, int position) {
-        Restaurants restaurant=mRestaurantsList.get(position);
-        holder.name.setText(restaurant.getRestaurant().getName());
-        Log.d("setting tname",restaurant.getRestaurant().getName());
-        holder.address.setText(restaurant.getRestaurant().getLocation().getAddress());
+        Restaurants.Restaurant restaurant=mRestaurantsList.get(position).getRestaurant();
+        holder.name.setText(restaurant.getName());
+        Log.d("setting tname",restaurant.getName());
+        holder.address.setText(restaurant.getLocation().getAddress());
+        Picasso.with(mContext)
+                .load(restaurant.getFeatured_image())
+                .into(holder.image_background);
     }
 
     @Override
