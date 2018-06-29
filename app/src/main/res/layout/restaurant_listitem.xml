@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><!-- restaurant row item layout -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/cardview_elevation"
+        card_view:cardCornerRadius="4dp">
+
+        <ImageView
+            android:id="@+id/image_background"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="fitXY" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/vertical_gradient">
+
+            <TextView
+                android:id="@+id/text_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="hello"
+                android:fontFamily="sans-serif-condensed"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="@dimen/restaurant_title"
+
+                android:layout_marginLeft="@dimen/horizontal_margin"/>
+
+            <TextView
+                android:layout_marginLeft="@dimen/horizontal_margin"
+                android:id="@+id/text_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_name"
+                android:textColor="@color/white"
+                android:layout_alignParentLeft="true"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="@dimen/restaurant_address" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>
