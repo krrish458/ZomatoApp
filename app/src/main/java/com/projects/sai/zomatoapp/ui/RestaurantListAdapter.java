@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.projects.sai.zomatoapp.R;
-import com.projects.sai.zomatoapp.model.Restaurants;
+import com.projects.sai.zomatoapp.model.NearByRestaurants;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -25,10 +25,10 @@ import butterknife.ButterKnife;
 public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListAdapter.RestaurantListHolder> {
     private static String TAG =RestaurantListAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Restaurants> mRestaurantsList;
+    private List<NearByRestaurants> mNearByRestaurantsList;
 
-    public RestaurantListAdapter(List<Restaurants> mRestaurantsList) {
-        this.mRestaurantsList = mRestaurantsList;
+    public RestaurantListAdapter(List<NearByRestaurants> mNearByRestaurantsList) {
+        this.mNearByRestaurantsList = mNearByRestaurantsList;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
 
     @Override
     public void onBindViewHolder(RestaurantListHolder holder, int position) {
-        Restaurants.Restaurant restaurant=mRestaurantsList.get(position).getRestaurant();
+        NearByRestaurants.Restaurant restaurant= mNearByRestaurantsList.get(position).getRestaurant();
         holder.name.setText(restaurant.getName());
         Log.d("setting tname",restaurant.getName());
         holder.address.setText(restaurant.getLocation().getAddress());
@@ -55,8 +55,8 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
 
     @Override
     public int getItemCount() {
-        Log.d(TAG +"size", String.valueOf(mRestaurantsList.size()));
-        return mRestaurantsList.size();
+        Log.d(TAG +"size", String.valueOf(mNearByRestaurantsList.size()));
+        return mNearByRestaurantsList.size();
 
     }
 

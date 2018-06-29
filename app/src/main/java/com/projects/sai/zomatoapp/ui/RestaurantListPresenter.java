@@ -1,10 +1,17 @@
 package com.projects.sai.zomatoapp.ui;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.util.Log;
 
 import com.projects.sai.zomatoapp.apiservices.RestaurantsApiService;
 import com.projects.sai.zomatoapp.apiservices.ServiceGenerator;
+import com.projects.sai.zomatoapp.model.NearByRestaurants;
 import com.projects.sai.zomatoapp.model.RestaurantCollection;
+import com.projects.sai.zomatoapp.model.localdatabase.RestaurantFields;
+import com.projects.sai.zomatoapp.model.localdatabase.RestaurantProvider;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -17,20 +24,28 @@ import retrofit2.Response;
 public class RestaurantListPresenter implements RestaurantListContract.presenter {
     private RestaurantsApiService mService;
     private RestaurantListContract.view mView;
+    private ArrayList<NearByRestaurants> mRestaurantList;
+    private String[] mProjection = {
+            RestaurantFields.Column_name,    // Contract class constant for restaurant name in the database table
+            RestaurantFields.Column_address,    // Contract class constant for restaurant address in the database table
+            RestaurantFields.Column_featureImage,    // Contract class constant restaurant feature image in the database table
+    };
 
-
+    //method to consume nearbyrestaurant api services
     @Override
     public void loadRestaurants() {
         mService = ServiceGenerator.createService(RestaurantsApiService.class);
         Call<RestaurantCollection> call = mService.getRestaurants(RestaurantsApiService.API_KEY, -37.803, 145.002);
-
         call.enqueue(new Callback<RestaurantCollection>() {
             @Override
             public void onResponse(Call<RestaurantCollection> call, Response<RestaurantCollection> response) {
-                if(response.code()==200) {
-                    mView.showRestaurants(response.body().getRestaurantArrayList());
-                }
-                else {
+                if (response.code() == 200) {
+                    mRestaurantList = response.body().getRestaurantArrayList();
+                    mView.showRestaurants(mRestaurantList);
+                    //if database dosen't contain any data then save the consumed api data locally
+                    if (localDataExists())
+                        SaveDataLocally();
+                } else {
                     Log.d("message", "couldnt connect to server");
                 }
             }
@@ -42,8 +57,68 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         });
     }
 
+    private void SaveDataLocally() {
+        ContentValues values = new ContentValues();
+        for (NearByRestaurants nearByRestaurants : mRestaurantList) {
+            //restaurant object res to fetch the properties of restaurant object and inserted to content values.
+            NearByRestaurants.Restaurant res = nearByRestaurants.getRestaurant();
+            values.put(RestaurantFields.Column_restaurantId, res.getId());
+            values.put(RestaurantFields.Column_name, res.getName());
+            values.put(RestaurantFields.Column_address, res.getLocation().getAddress());
+            values.put(RestaurantFields.Column_featureImage, res.getFeatured_image());
+            ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(RestaurantProvider.Resturants.CONTENT_URI, values);
+        }
+    }
+
+    public Boolean localDataExists() {
+
+        Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver().query(RestaurantProvider.Resturants.CONTENT_URI, mProjection, null, null, null, null);
+        if (cursor == null)
+            return false;
+        else
+            return true;
+    }
+
+    public void loadDataLocally() {
+        ArrayList<NearByRestaurants> nearByRestaurantslist = new ArrayList<>();
+        Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver()
+                .query(RestaurantProvider.Resturants.CONTENT_URI,
+                        mProjection,
+                        null,
+                        null,
+                        null,
+                        null);
+
+        if (cursor == null) {
+
+        }
+        //if data is present in database then  populate an array list of type nearbyrestaurants and populate the recyclerview.
+        else {
+            while (cursor.moveToNext()) {
+                NearByRestaurants nearByRestaurants = new NearByRestaurants();
+                NearByRestaurants.Restaurant restaurant = new NearByRestaurants.Restaurant();
+                NearByRestaurants.Location location = new NearByRestaurants.Location();
+                String name = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_name));
+                String address = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_address));
+                String featureimage = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_featureImage));
+                restaurant.setFeatured_image(featureimage);
+                restaurant.setName(name);
+                location.setAddress(address);
+                restaurant.setLocation(location);
+                nearByRestaurants.setRestaurant(restaurant);
+                nearByRestaurantslist.add(nearByRestaurants);
+            }
+            mView.showRestaurants(nearByRestaurantslist);
+        }
+    }
+
     @Override
-    public void setView(RestaurantListContract.view view) {
-            mView=view;
+    public void attachView(RestaurantListContract.view view) {
+        mView = view;
+    }
+
+    @Override
+    public void detachView() {
+        mView=null;
     }
 }
