@@ -43,7 +43,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                     mRestaurantList = response.body().getRestaurantArrayList();
                     mView.showRestaurants(mRestaurantList);
                     //if database dosen't contain any data then save the consumed api data locally
-                    if (localDataExists())
+                    if (!localDataExists())
                         SaveDataLocally();
                 } else {
                     Log.d("message", "couldnt connect to server");
@@ -73,10 +73,10 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
     public Boolean localDataExists() {
 
         Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver().query(RestaurantProvider.Resturants.CONTENT_URI, mProjection, null, null, null, null);
-        if (cursor == null)
-            return false;
-        else
+        if (cursor.getCount()>0)
             return true;
+        else
+            return false;
     }
 
     public void loadDataLocally() {
