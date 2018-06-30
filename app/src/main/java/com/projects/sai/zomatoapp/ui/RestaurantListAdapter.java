@@ -28,7 +28,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
     private List<NearByRestaurants> mNearByRestaurantsList;
     private OnItemClickListener clickListener;
 
-    public void setClickListener(RestaurantListFragment clickListener) {
+    public void setClickListener(OnItemClickListener clickListener) {
         this.clickListener = clickListener;
     }
 

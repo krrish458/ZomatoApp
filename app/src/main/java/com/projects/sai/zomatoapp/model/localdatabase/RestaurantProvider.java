@@ -57,7 +57,7 @@ public class RestaurantProvider {
         }
     }
 
-    @TableEndpoint(table = ZomatoDatabase.Favorites)
+    /*@TableEndpoint(table = ZomatoDatabase.Favorites)
     //BUILDING THE FAVORITES TABLE
     public static class Favorites {
         //BUILDING PATH TO BROWSE THE WHOLE FAVORITES TABLE.
@@ -77,6 +77,6 @@ public class RestaurantProvider {
         public static Uri withId(long id) {
             return buildUri(Path.Favorites, String.valueOf(id));
         }
-    }
+    }*/
 }
 

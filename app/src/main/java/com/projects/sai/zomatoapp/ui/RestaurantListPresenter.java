@@ -124,7 +124,6 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
     public void detachView() {
         mView = null;
     }
-
     @Override
     public void onfavoritesclicked(int position) {
         ContentValues values= new ContentValues();
@@ -133,7 +132,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         values.put(RestaurantFields.Column_name, res.getName());
         values.put(RestaurantFields.Column_address, res.getLocation().getAddress());
         values.put(RestaurantFields.Column_featureImage, res.getFeatured_image());
-        ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(RestaurantProvider.Favorites.CONTENT_URI, values);
+        ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(RestaurantProvider.Resturants.CONTENT_URI, values);
 
     }
 }

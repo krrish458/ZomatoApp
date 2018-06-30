@@ -16,6 +16,6 @@ public class ZomatoDatabase {
     @Table(RestaurantFields.class)
     public static final String Restaurants = "restaurants";
 
-    @Table(FavoriteFields.class)
-    public static final String Favorites = "favorites";
+   /* @Table(FavoriteFields.class)
+    public static final String Favorites = "favorites";*/
 }

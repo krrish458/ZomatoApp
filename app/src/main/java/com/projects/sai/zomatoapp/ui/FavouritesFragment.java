@@ -60,7 +60,7 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), Constatnts.FAVORITES_URI, Constatnts.PROJECTION, null, null, null);
+        return new CursorLoader(getActivity(), Constatnts.RESTAURANTS_URI, Constatnts.PROJECTION, null, null, null);
 
     }
 

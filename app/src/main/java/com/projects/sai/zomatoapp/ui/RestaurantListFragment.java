@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
  * Created by sai on 28/06/2018.
  */
 
-public class RestaurantListFragment extends Fragment implements RestaurantListContract.view, RestaurantListAdapter.OnItemClickListener {
+public class RestaurantListFragment extends Fragment implements RestaurantListContract.view, RestaurantListAdapter.OnItemClickListener{
     private static String TAG = RestaurantListFragment.class.getSimpleName();
     private Boolean isOnline = true;
     @BindView(R.id.recyclerview_homescreen)
@@ -37,7 +37,7 @@ public class RestaurantListFragment extends Fragment implements RestaurantListCo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPresenter = new RestaurantListPresenter();
-        mPresenter.attachView(((RestaurantListContract.view)this));
+        mPresenter.attachView(this);
     }
 
     @Nullable
@@ -64,7 +64,7 @@ public class RestaurantListFragment extends Fragment implements RestaurantListCo
     public void showRestaurants(ArrayList<NearByRestaurants> nearByRestaurantsList) {
         // Create an adapter and supply the data to be displayed.
         RestaurantListAdapter rAdapter = new RestaurantListAdapter(nearByRestaurantsList);
-      //  rAdapter.setClickListener(this);
+        rAdapter.setClickListener(this);
         // Connect the adapter with the recycler view.
         mRecylerView.setAdapter(rAdapter);
         hideProgressBar();
