@@ -24,6 +24,8 @@ public interface RestaurantListContract {
         void loadDataLocally();
         void attachView(RestaurantListContract.view view);
         void detachView();
-        void onfavoritesclicked(int position);
+        void onAddFavorites(int position);
+
+        void onRemoveFavorites(int position);
     }
 }

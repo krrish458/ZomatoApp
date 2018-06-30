@@ -10,6 +10,7 @@ import com.projects.sai.zomatoapp.apiservices.RestaurantsApiService;
 import com.projects.sai.zomatoapp.apiservices.ServiceGenerator;
 import com.projects.sai.zomatoapp.model.NearByRestaurants;
 import com.projects.sai.zomatoapp.model.RestaurantCollection;
+import com.projects.sai.zomatoapp.model.localdatabase.FavoriteFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantProvider;
 import com.projects.sai.zomatoapp.utilities.Constatnts;
@@ -123,7 +124,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         mView = null;
     }
     @Override
-    public void onfavoritesclicked(int position) {
+    public void onAddFavorites(int position) {
         ContentValues values= new ContentValues();
         NearByRestaurants.Restaurant res=mRestaurantList.get(position).getRestaurant();
         values.put(RestaurantFields.Column_restaurantId, res.getId());
@@ -132,5 +133,12 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         values.put(RestaurantFields.Column_featureImage, res.getFeatured_image());
         ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(Constatnts.FAVORITES_URI, values);
 
+    }
+
+    @Override
+    public void onRemoveFavorites(int position) {
+        String selection = FavoriteFields.Column_restaurantId + "=?";
+        String[] selectionArgs = new String[]{mRestaurantList.get(position).getRestaurant().getId()};
+        ((RestaurantListFragment)mView).getActivity().getContentResolver().delete(Constatnts.FAVORITES_URI, selection, selectionArgs);
     }
 }

@@ -81,9 +81,16 @@ public class FavouritesListAdapter extends RecyclerView.Adapter<FavouritesListAd
         public TextView name;
         @BindView(R.id.text_address)
         public TextView address;
+        @BindView(R.id.image_favorite_border)
+        ImageView favorite_border;
+        @BindView(R.id.image_favorite)
+        ImageView favorite;
+
         public FavouritesViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+            favorite.setVisibility(View.INVISIBLE);
+            favorite_border.setVisibility(View.INVISIBLE);
         }
 
         void  bindData(String name, String address, String featureImage){
@@ -91,6 +98,7 @@ public class FavouritesListAdapter extends RecyclerView.Adapter<FavouritesListAd
            this.address.setText(address);
             Picasso.with(mContext)
                     .load(featureImage)
+                    .placeholder(R.drawable.ic_placeholder)
                     .into(image_background);
         }
     }

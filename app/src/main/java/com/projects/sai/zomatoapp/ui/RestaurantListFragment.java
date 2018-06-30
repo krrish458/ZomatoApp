@@ -59,7 +59,6 @@ public class RestaurantListFragment extends Fragment implements RestaurantListCo
             mPresenter.loadDataLocally();
     }
 
-
     @Override
     public void showRestaurants(ArrayList<NearByRestaurants> nearByRestaurantsList) {
         // Create an adapter and supply the data to be displayed.
@@ -90,7 +89,17 @@ public class RestaurantListFragment extends Fragment implements RestaurantListCo
     //click handlers for favorite buttons
     @Override
     public void onClick(View view, int position) {
-            mPresenter.onfavoritesclicked( position);
+        switch (view.getId()) {
+            case R.id.image_favorite_border:
+                mPresenter.onAddFavorites(position);
+                break;
+            case R.id.image_favorite:
+                mPresenter.onRemoveFavorites(position);
+                break;
+            default:
+                break;
+        }
+
     }
 
 }

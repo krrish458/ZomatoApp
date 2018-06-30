@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.projects.sai.zomatoapp.R;
 import com.projects.sai.zomatoapp.model.NearByRestaurants;
+import com.projects.sai.zomatoapp.utilities.Utilities;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -79,8 +80,10 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
         public RestaurantListHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
-            favorite.setOnClickListener(this);
-            favorite_border.setOnClickListener(this);
+            if(Utilities.isNetworkConnected(mContext)) {
+                favorite.setOnClickListener(this);
+                favorite_border.setOnClickListener(this);
+            }
         }
 
 
@@ -90,6 +93,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
             address.setText(restaurant.getLocation().getAddress());
             Picasso.with(mContext)
                     .load(restaurant.getFeatured_image())
+                    .placeholder(R.drawable.ic_placeholder)
                     .into(image_background);
 
         }
