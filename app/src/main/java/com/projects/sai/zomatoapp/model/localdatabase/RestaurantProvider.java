@@ -41,7 +41,7 @@ public class RestaurantProvider {
         //BUILDING PATH TO BROWSE RESTAURANT TABLE
         @ContentUri(
                 path = Path.Restaurants,
-                type = "vnd.android.cursor.dir/movies",
+                type = "vnd.android.cursor.dir/restaurants",
                 defaultSort = RestaurantFields.Column_restaurantId + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.Restaurants);
 
@@ -49,7 +49,7 @@ public class RestaurantProvider {
         @InexactContentUri(
                 name = "RESTAURANT_ID",
                 path = Path.Restaurants + "/#",
-                type = "vnd.android.cursor.item/planet",
+                type = "vnd.android.cursor.item/restaurant",
                 whereColumn = RestaurantFields.Column_restaurantId,
                 pathSegment = 1)
         public static Uri withId(long id) {
@@ -57,26 +57,26 @@ public class RestaurantProvider {
         }
     }
 
-    /*@TableEndpoint(table = ZomatoDatabase.Favorites)
+
+    @TableEndpoint(table = ZomatoDatabase.Favorites)
     //BUILDING THE FAVORITES TABLE
     public static class Favorites {
         //BUILDING PATH TO BROWSE THE WHOLE FAVORITES TABLE.
         @ContentUri(
                 path = Path.Favorites,
-                type = "vnd.android.cursor.dir/movies",
+                type = "vnd.android.cursor.dir/favorites",
                 defaultSort = RestaurantFields.Column_restaurantId + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.Favorites);
 
         //BUILDING PATH TO BROWSE FOR A PARTICULAR ROW BASED ON RESTAURANT ID
         @InexactContentUri(
                 name = "RESTAURANT_ID",
-                path = Path.Restaurants + "/#",
-                type = "vnd.android.cursor.item/planet",
-                whereColumn = RestaurantFields.Column_restaurantId,
+                path = Path.Favorites + "/#",
+                type = "vnd.android.cursor.item/favorites",
+                whereColumn = FavoriteFields.Column_restaurantId,
                 pathSegment = 1)
-        public static Uri withId(long id) {
-            return buildUri(Path.Favorites, String.valueOf(id));
+        public static Uri withId(long id) {return buildUri(Path.Favorites, String.valueOf(id));
         }
-    }*/
+    }
 }
 

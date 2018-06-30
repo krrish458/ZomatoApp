@@ -40,15 +40,13 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         call.enqueue(new Callback<RestaurantCollection>() {
             @Override
             public void onResponse(Call<RestaurantCollection> call, Response<RestaurantCollection> response) {
-                if (response.code() == 200) {
+                if (response.code() == 200 && response.body()!=null){
                     mRestaurantList = response.body().getRestaurantArrayList();
                     mView.showRestaurants(mRestaurantList);
 
                     //if database dosen't contain any data then save the consumed api data locally
                     if (!localDataExists())
                         SaveDataLocally();
-                } else {
-                    Log.d("message", "couldnt connect to server");
                 }
             }
 
@@ -132,7 +130,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         values.put(RestaurantFields.Column_name, res.getName());
         values.put(RestaurantFields.Column_address, res.getLocation().getAddress());
         values.put(RestaurantFields.Column_featureImage, res.getFeatured_image());
-        ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(RestaurantProvider.Resturants.CONTENT_URI, values);
+        ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(Constatnts.FAVORITES_URI, values);
 
     }
 }

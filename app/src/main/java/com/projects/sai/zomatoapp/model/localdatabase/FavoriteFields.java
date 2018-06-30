@@ -12,7 +12,7 @@ import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
  * Created by sai on 30/06/2018.
  */
 
-public class FavoriteFields {
+public interface FavoriteFields {
 
 
     //Fields for the table restaurant are declared here

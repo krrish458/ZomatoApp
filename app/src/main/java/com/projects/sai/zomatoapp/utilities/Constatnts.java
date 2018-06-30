@@ -20,5 +20,5 @@ public class Constatnts {
     };
 
     public static Uri RESTAURANTS_URI= RestaurantProvider.Resturants.CONTENT_URI;
-    /*public static Uri FAVORITES_URI= RestaurantProvider.Favorites.CONTENT_URI;*/
+    public static Uri FAVORITES_URI= RestaurantProvider.Favorites.CONTENT_URI;
 }
