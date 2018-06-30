@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.provider.SyncStateContract;
 import android.util.Log;
+import android.view.View;
 
 import com.projects.sai.zomatoapp.apiservices.RestaurantsApiService;
 import com.projects.sai.zomatoapp.apiservices.ServiceGenerator;
@@ -112,6 +113,8 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         }
     }
 
+
+
     @Override
     public void attachView(RestaurantListContract.view view) {
         mView = view;
@@ -120,5 +123,17 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
     @Override
     public void detachView() {
         mView = null;
+    }
+
+    @Override
+    public void onfavoritesclicked(int position) {
+        ContentValues values= new ContentValues();
+        NearByRestaurants.Restaurant res=mRestaurantList.get(position).getRestaurant();
+        values.put(RestaurantFields.Column_restaurantId, res.getId());
+        values.put(RestaurantFields.Column_name, res.getName());
+        values.put(RestaurantFields.Column_address, res.getLocation().getAddress());
+        values.put(RestaurantFields.Column_featureImage, res.getFeatured_image());
+        ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(RestaurantProvider.Favorites.CONTENT_URI, values);
+
     }
 }

@@ -26,7 +26,15 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
     private static String TAG =RestaurantListAdapter.class.getSimpleName();
     private Context mContext;
     private List<NearByRestaurants> mNearByRestaurantsList;
+    private OnItemClickListener clickListener;
 
+    public void setClickListener(RestaurantListFragment clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    public interface OnItemClickListener {
+        public void onClick(View view, int position);
+    }
     public RestaurantListAdapter(List<NearByRestaurants> mNearByRestaurantsList) {
         this.mNearByRestaurantsList = mNearByRestaurantsList;
     }
@@ -55,17 +63,26 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
 
     }
 
-    public  class RestaurantListHolder extends RecyclerView.ViewHolder{
+    public  class RestaurantListHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @BindView(R.id.image_background)
         public ImageView image_background;
         @BindView(R.id.text_name)
         public TextView name;
         @BindView(R.id.text_address)
         public TextView address;
+        @BindView(R.id.image_favorite_border)
+        ImageView favorite_border;
+        @BindView(R.id.image_favorite)
+        ImageView favorite;
+
+
         public RestaurantListHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+            favorite.setOnClickListener(this);
+            favorite_border.setOnClickListener(this);
         }
+
 
         public void  bindData(NearByRestaurants.Restaurant restaurant){
             name.setText(restaurant.getName());
@@ -75,6 +92,24 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
                     .load(restaurant.getFeatured_image())
                     .into(image_background);
 
+        }
+
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.image_favorite:
+                    favorite.setVisibility(View.INVISIBLE);
+                    favorite_border.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.image_favorite_border:
+                    favorite_border.setVisibility(View.INVISIBLE);
+                    favorite.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    break;
+            }
+            clickListener.onClick(view,getAdapterPosition());
         }
     }
 }

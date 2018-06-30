@@ -1,6 +1,7 @@
 package com.projects.sai.zomatoapp.ui;
 
 import android.content.ContentValues;
+import android.view.View;
 
 import com.projects.sai.zomatoapp.model.NearByRestaurants;
 
@@ -23,5 +24,6 @@ public interface RestaurantListContract {
         void loadDataLocally();
         void attachView(RestaurantListContract.view view);
         void detachView();
+        void onfavoritesclicked(int position);
     }
 }

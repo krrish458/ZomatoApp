@@ -55,6 +55,7 @@ public class FavouritesListAdapter extends RecyclerView.Adapter<FavouritesListAd
                 String name = mCursor.getString(mCursor.getColumnIndex(RestaurantFields.Column_name));
                 String address = mCursor.getString(mCursor.getColumnIndex(RestaurantFields.Column_address));
                 String featureimage = mCursor.getString(mCursor.getColumnIndex(RestaurantFields.Column_featureImage));
+                holder.bindData(name,address,featureimage);
             } else {
                // holder.wordItemView.setText(R.string.error_no_word);
             }

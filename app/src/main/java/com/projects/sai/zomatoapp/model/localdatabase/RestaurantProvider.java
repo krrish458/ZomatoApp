@@ -32,12 +32,13 @@ public class RestaurantProvider {
 
         //name must match exactly to the table name specified in zomato database class
         String Restaurants = "restaurants";
+        String Favorites="favorites";
     }
 
     @TableEndpoint(table = ZomatoDatabase.Restaurants)
-
-    //BUILDING PATH TO BROWSE THE WHOLE TABLE.
+    //BUILDING CONTENTURI'S FOR RESTAURANT TABLE
     public static class Resturants {
+        //BUILDING PATH TO BROWSE RESTAURANT TABLE
         @ContentUri(
                 path = Path.Restaurants,
                 type = "vnd.android.cursor.dir/movies",
@@ -56,6 +57,26 @@ public class RestaurantProvider {
         }
     }
 
+    @TableEndpoint(table = ZomatoDatabase.Favorites)
+    //BUILDING THE FAVORITES TABLE
+    public static class Favorites {
+        //BUILDING PATH TO BROWSE THE WHOLE FAVORITES TABLE.
+        @ContentUri(
+                path = Path.Favorites,
+                type = "vnd.android.cursor.dir/movies",
+                defaultSort = RestaurantFields.Column_restaurantId + " ASC")
+        public static final Uri CONTENT_URI = buildUri(Path.Favorites);
 
+        //BUILDING PATH TO BROWSE FOR A PARTICULAR ROW BASED ON RESTAURANT ID
+        @InexactContentUri(
+                name = "RESTAURANT_ID",
+                path = Path.Restaurants + "/#",
+                type = "vnd.android.cursor.item/planet",
+                whereColumn = RestaurantFields.Column_restaurantId,
+                pathSegment = 1)
+        public static Uri withId(long id) {
+            return buildUri(Path.Favorites, String.valueOf(id));
+        }
+    }
 }
 
