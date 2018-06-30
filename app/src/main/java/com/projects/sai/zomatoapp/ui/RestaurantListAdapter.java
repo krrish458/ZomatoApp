@@ -10,7 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.projects.sai.zomatoapp.R;
-import com.projects.sai.zomatoapp.model.Restaurants;
+import com.projects.sai.zomatoapp.model.NearByRestaurants;
+import com.projects.sai.zomatoapp.utilities.Utilities;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -25,10 +26,18 @@ import butterknife.ButterKnife;
 public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListAdapter.RestaurantListHolder> {
     private static String TAG =RestaurantListAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Restaurants> mRestaurantsList;
+    private List<NearByRestaurants> mNearByRestaurantsList;
+    private OnItemClickListener clickListener;
 
-    public RestaurantListAdapter(List<Restaurants> mRestaurantsList) {
-        this.mRestaurantsList = mRestaurantsList;
+    public void setClickListener(OnItemClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    public interface OnItemClickListener {
+        public void onClick(View view, int position);
+    }
+    public RestaurantListAdapter(List<NearByRestaurants> mNearByRestaurantsList) {
+        this.mNearByRestaurantsList = mNearByRestaurantsList;
     }
 
     @Override
@@ -44,32 +53,67 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
 
     @Override
     public void onBindViewHolder(RestaurantListHolder holder, int position) {
-        Restaurants.Restaurant restaurant=mRestaurantsList.get(position).getRestaurant();
-        holder.name.setText(restaurant.getName());
-        Log.d("setting tname",restaurant.getName());
-        holder.address.setText(restaurant.getLocation().getAddress());
-        Picasso.with(mContext)
-                .load(restaurant.getFeatured_image())
-                .into(holder.image_background);
+        NearByRestaurants.Restaurant restaurant= mNearByRestaurantsList.get(position).getRestaurant();
+        holder.bindData(restaurant);
     }
 
     @Override
     public int getItemCount() {
-        Log.d(TAG +"size", String.valueOf(mRestaurantsList.size()));
-        return mRestaurantsList.size();
+        Log.d(TAG +"size", String.valueOf(mNearByRestaurantsList.size()));
+        return mNearByRestaurantsList.size();
 
     }
 
-    public static class RestaurantListHolder extends RecyclerView.ViewHolder{
+    public  class RestaurantListHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @BindView(R.id.image_background)
         public ImageView image_background;
         @BindView(R.id.text_name)
         public TextView name;
         @BindView(R.id.text_address)
         public TextView address;
+        @BindView(R.id.image_favorite_border)
+        ImageView favorite_border;
+        @BindView(R.id.image_favorite)
+        ImageView favorite;
+
+
         public RestaurantListHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+            if(Utilities.isNetworkConnected(mContext)) {
+                favorite.setOnClickListener(this);
+                favorite_border.setOnClickListener(this);
+            }
+        }
+
+
+        public void  bindData(NearByRestaurants.Restaurant restaurant){
+            name.setText(restaurant.getName());
+            Log.d("setting tname",restaurant.getName());
+            address.setText(restaurant.getLocation().getAddress());
+            Picasso.with(mContext)
+                    .load(restaurant.getFeatured_image())
+                    .placeholder(R.drawable.ic_placeholder)
+                    .into(image_background);
+
+        }
+
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.image_favorite:
+                    favorite.setVisibility(View.INVISIBLE);
+                    favorite_border.setVisibility(View.VISIBLE);
+                    break;
+                case R.id.image_favorite_border:
+                    favorite_border.setVisibility(View.INVISIBLE);
+                    favorite.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    break;
+            }
+            clickListener.onClick(view,getAdapterPosition());
         }
     }
 }

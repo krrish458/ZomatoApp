@@ -6,4 +6,5 @@
     <dimen name="restaurant_title">16sp</dimen>
     <dimen name="restaurant_address">10sp</dimen>
     <dimen name="horizontal_margin">16dp</dimen>
+    <dimen name="vertical_margin">16dp</dimen>
 </resources>

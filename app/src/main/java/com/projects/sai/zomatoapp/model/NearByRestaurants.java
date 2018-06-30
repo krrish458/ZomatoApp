@@ -1,12 +1,10 @@
 package com.projects.sai.zomatoapp.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Created by sai on 28/06/2018.
  */
 
-public class Restaurants {
+public class NearByRestaurants {
     //restaurants list containing objects of type restaurant and location
     private Restaurant restaurant;
 
@@ -35,9 +33,7 @@ public class Restaurants {
 
     //class for restaurant object
     public static class Restaurant {
-        @SerializedName("id")
         private String id;
-        @SerializedName("name")
         private String name;
         private Location location;
         private String featured_image;

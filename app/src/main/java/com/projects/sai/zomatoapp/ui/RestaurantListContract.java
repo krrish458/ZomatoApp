@@ -1,9 +1,11 @@
 package com.projects.sai.zomatoapp.ui;
 
-import com.projects.sai.zomatoapp.model.Restaurants;
+import android.content.ContentValues;
+import android.view.View;
+
+import com.projects.sai.zomatoapp.model.NearByRestaurants;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by sai on 28/06/2018.
@@ -13,11 +15,17 @@ import java.util.List;
 public interface RestaurantListContract {
 
     interface view{
-        void showRestaurants(ArrayList<Restaurants> RestaurantsList);
+        void showRestaurants(ArrayList<NearByRestaurants> nearByRestaurantsList);
         void showProgressBar();
+        void hideProgressBar();
     }
     interface presenter{
         void loadRestaurants();
-        void setView(RestaurantListContract.view view);
+        void loadDataLocally();
+        void attachView(RestaurantListContract.view view);
+        void detachView();
+        void onAddFavorites(int position);
+
+        void onRemoveFavorites(int position);
     }
 }

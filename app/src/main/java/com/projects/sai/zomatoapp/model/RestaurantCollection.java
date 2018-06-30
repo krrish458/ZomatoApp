@@ -11,12 +11,12 @@ import java.util.ArrayList;
 public class RestaurantCollection {
     //arralylist to collect all the restaurants in abbotsford
     @SerializedName("nearby_restaurants")
-    ArrayList<Restaurants> restaurantArrayList;
-    public ArrayList<Restaurants> getRestaurantArrayList() {
+    ArrayList<NearByRestaurants> restaurantArrayList;
+    public ArrayList<NearByRestaurants> getRestaurantArrayList() {
         return restaurantArrayList;
     }
 
-    public void setRestaurantArrayList(ArrayList<Restaurants> restaurantArrayList) {
+    public void setRestaurantArrayList(ArrayList<NearByRestaurants> restaurantArrayList) {
         this.restaurantArrayList = restaurantArrayList;
     }
 
