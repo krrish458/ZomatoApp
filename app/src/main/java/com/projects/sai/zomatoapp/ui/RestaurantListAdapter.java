@@ -45,12 +45,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
     @Override
     public void onBindViewHolder(RestaurantListHolder holder, int position) {
         NearByRestaurants.Restaurant restaurant= mNearByRestaurantsList.get(position).getRestaurant();
-        holder.name.setText(restaurant.getName());
-        Log.d("setting tname",restaurant.getName());
-        holder.address.setText(restaurant.getLocation().getAddress());
-        Picasso.with(mContext)
-                .load(restaurant.getFeatured_image())
-                .into(holder.image_background);
+        holder.bindData(restaurant);
     }
 
     @Override
@@ -60,7 +55,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
 
     }
 
-    public static class RestaurantListHolder extends RecyclerView.ViewHolder{
+    public  class RestaurantListHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.image_background)
         public ImageView image_background;
         @BindView(R.id.text_name)
@@ -70,6 +65,16 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
         public RestaurantListHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+        }
+
+        public void  bindData(NearByRestaurants.Restaurant restaurant){
+            name.setText(restaurant.getName());
+            Log.d("setting tname",restaurant.getName());
+            address.setText(restaurant.getLocation().getAddress());
+            Picasso.with(mContext)
+                    .load(restaurant.getFeatured_image())
+                    .into(image_background);
+
         }
     }
 }

@@ -48,5 +48,6 @@
                 android:textSize="@dimen/restaurant_address"
                 android:layout_marginBottom="@dimen/vertical_margin"/>
         </RelativeLayout>
+
     </android.support.v7.widget.CardView>
 </LinearLayout>

@@ -2,6 +2,7 @@ package com.projects.sai.zomatoapp.ui;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.provider.SyncStateContract;
 import android.util.Log;
 
 import com.projects.sai.zomatoapp.apiservices.RestaurantsApiService;
@@ -10,12 +11,15 @@ import com.projects.sai.zomatoapp.model.NearByRestaurants;
 import com.projects.sai.zomatoapp.model.RestaurantCollection;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantProvider;
+import com.projects.sai.zomatoapp.utilities.Constatnts;
 
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+
 
 /**
  * Created by sai on 28/06/2018.
@@ -25,11 +29,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
     private RestaurantsApiService mService;
     private RestaurantListContract.view mView;
     private ArrayList<NearByRestaurants> mRestaurantList;
-    private String[] mProjection = {
-            RestaurantFields.Column_name,    // Contract class constant for restaurant name in the database table
-            RestaurantFields.Column_address,    // Contract class constant for restaurant address in the database table
-            RestaurantFields.Column_featureImage,    // Contract class constant restaurant feature image in the database table
-    };
+
 
     //method to consume nearbyrestaurant api services
     @Override
@@ -42,6 +42,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                 if (response.code() == 200) {
                     mRestaurantList = response.body().getRestaurantArrayList();
                     mView.showRestaurants(mRestaurantList);
+
                     //if database dosen't contain any data then save the consumed api data locally
                     if (!localDataExists())
                         SaveDataLocally();
@@ -72,8 +73,8 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
 
     public Boolean localDataExists() {
 
-        Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver().query(RestaurantProvider.Resturants.CONTENT_URI, mProjection, null, null, null, null);
-        if (cursor.getCount()>0)
+        Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver().query(Constatnts.RESTAURANTS_URI, Constatnts.PROJECTION, null, null, null, null);
+        if (cursor.getCount() > 0)
             return true;
         else
             return false;
@@ -82,15 +83,14 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
     public void loadDataLocally() {
         ArrayList<NearByRestaurants> nearByRestaurantslist = new ArrayList<>();
         Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver()
-                .query(RestaurantProvider.Resturants.CONTENT_URI,
-                        mProjection,
+                .query(Constatnts.RESTAURANTS_URI,
+                        Constatnts.PROJECTION,
                         null,
                         null,
                         null,
                         null);
 
         if (cursor == null) {
-
         }
         //if data is present in database then  populate an array list of type nearbyrestaurants and populate the recyclerview.
         else {
@@ -119,6 +119,6 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
 
     @Override
     public void detachView() {
-        mView=null;
+        mView = null;
     }
 }

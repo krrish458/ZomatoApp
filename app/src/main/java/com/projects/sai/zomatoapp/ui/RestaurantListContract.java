@@ -16,6 +16,7 @@ public interface RestaurantListContract {
     interface view{
         void showRestaurants(ArrayList<NearByRestaurants> nearByRestaurantsList);
         void showProgressBar();
+        void hideProgressBar();
     }
     interface presenter{
         void loadRestaurants();
