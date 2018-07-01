@@ -1,6 +1,7 @@
 package com.projects.sai.zomatoapp.ui;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 
 import com.projects.sai.zomatoapp.R;
 import com.projects.sai.zomatoapp.model.NearByRestaurants;
+import com.projects.sai.zomatoapp.model.localdatabase.FavoriteFields;
+import com.projects.sai.zomatoapp.utilities.Constatnts;
 import com.projects.sai.zomatoapp.utilities.Utilities;
 import com.squareup.picasso.Picasso;
 
@@ -88,12 +91,26 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
 
 
         public void  bindData(NearByRestaurants.Restaurant restaurant){
+            //to set favorites button if restaurants already listed as favorite stored in database.
+            String selection= FavoriteFields.Column_restaurantId + "=?";
+            String[] selectionArgs = new String[]{restaurant.getId()};
+            Cursor cursor = mContext.getContentResolver()
+                    .query(Constatnts.FAVORITES_URI,
+                            Constatnts.PROJECTION,
+                            selection,
+                            selectionArgs,
+                            null,
+                            null);
+            if(cursor.getCount()>0)
+                favorite.setVisibility(View.VISIBLE);
+            else
+                favorite_border.setVisibility(View.VISIBLE);
             name.setText(restaurant.getName());
             Log.d("setting tname",restaurant.getName());
             address.setText(restaurant.getLocation().getAddress());
             Picasso.with(mContext)
                     .load(restaurant.getFeatured_image())
-                    .placeholder(R.drawable.ic_placeholder)
+                    .error(R.drawable.ic_placeholder)
                     .into(image_background);
 
         }
