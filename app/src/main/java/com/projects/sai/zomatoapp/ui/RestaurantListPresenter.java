@@ -44,13 +44,11 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                 if (response.code() == 200 && response.body()!=null){
                     mRestaurantList = response.body().getRestaurantArrayList();
                     mView.showRestaurants(mRestaurantList);
-
                     //if database dosen't contain any data then save the consumed api data locally
                     if (!localDataExists())
                         SaveDataLocally();
                 }
             }
-
             @Override
             public void onFailure(Call<RestaurantCollection> call, Throwable t) {
                 Log.d("failure", "failure");
@@ -98,6 +96,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                 NearByRestaurants nearByRestaurants = new NearByRestaurants();
                 NearByRestaurants.Restaurant restaurant = new NearByRestaurants.Restaurant();
                 NearByRestaurants.Location location = new NearByRestaurants.Location();
+                String id=cursor.getString((cursor.getColumnIndex(RestaurantFields.Column_restaurantId)));
                 String name = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_name));
                 String address = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_address));
                 String featureimage = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_featureImage));
@@ -105,6 +104,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                 restaurant.setName(name);
                 location.setAddress(address);
                 restaurant.setLocation(location);
+                restaurant.setId(id);
                 nearByRestaurants.setRestaurant(restaurant);
                 nearByRestaurantslist.add(nearByRestaurants);
             }
