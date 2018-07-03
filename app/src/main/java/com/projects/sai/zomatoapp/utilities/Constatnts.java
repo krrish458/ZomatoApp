@@ -2,6 +2,7 @@ package com.projects.sai.zomatoapp.utilities;
 
 import android.net.Uri;
 
+import com.projects.sai.zomatoapp.model.NearByRestaurants;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantProvider;
 
@@ -17,6 +18,7 @@ public class Constatnts {
             RestaurantFields.Column_name,    // Contract class constant for restaurant name in the database table
             RestaurantFields.Column_address,    // Contract class constant for restaurant address in the database table
             RestaurantFields.Column_featureImage,    // Contract class constant restaurant feature image in the database table
+            RestaurantFields.Column_restaurantId
     };
 
     public static Uri RESTAURANTS_URI= RestaurantProvider.Resturants.CONTENT_URI;
