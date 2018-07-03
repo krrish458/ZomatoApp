@@ -118,7 +118,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
                     .load(restaurant.getFeatured_image())
                     .error(R.drawable.ic_placeholder)
                     .into(image_background);
-
+            cursor.close();
         }
 
 

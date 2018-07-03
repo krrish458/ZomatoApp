@@ -2,9 +2,7 @@ package com.projects.sai.zomatoapp.ui;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.provider.SyncStateContract;
 import android.util.Log;
-import android.view.View;
 
 import com.projects.sai.zomatoapp.apiservices.RestaurantsApiService;
 import com.projects.sai.zomatoapp.apiservices.ServiceGenerator;
@@ -20,7 +18,6 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 
 /**
@@ -41,7 +38,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         call.enqueue(new Callback<RestaurantCollection>() {
             @Override
             public void onResponse(Call<RestaurantCollection> call, Response<RestaurantCollection> response) {
-                if (response.code() == 200 && response.body()!=null){
+                if (response.code() == 200 && response.body() != null) {
                     mRestaurantList = response.body().getRestaurantArrayList();
                     mView.showRestaurants(mRestaurantList);
                     //if database dosen't contain any data then save the consumed api data locally
@@ -49,6 +46,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                         SaveDataLocally();
                 }
             }
+
             @Override
             public void onFailure(Call<RestaurantCollection> call, Throwable t) {
                 Log.d("failure", "failure");
@@ -69,14 +67,19 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
         }
     }
 
-    public Boolean localDataExists() {
+    private Boolean localDataExists() {
 
         Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver().query(Constatnts.RESTAURANTS_URI, Constatnts.PROJECTION, null, null, null, null);
-        if (cursor.getCount() > 0)
+        if (cursor.getCount() > 0) {
+            cursor.close();
             return true;
-        else
+
+        } else {
+            cursor.close();
             return false;
+        }
     }
+
 
     public void loadDataLocally() {
         ArrayList<NearByRestaurants> nearByRestaurantslist = new ArrayList<>();
@@ -96,7 +99,7 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                 NearByRestaurants nearByRestaurants = new NearByRestaurants();
                 NearByRestaurants.Restaurant restaurant = new NearByRestaurants.Restaurant();
                 NearByRestaurants.Location location = new NearByRestaurants.Location();
-                String id=cursor.getString((cursor.getColumnIndex(RestaurantFields.Column_restaurantId)));
+                String id = cursor.getString((cursor.getColumnIndex(RestaurantFields.Column_restaurantId)));
                 String name = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_name));
                 String address = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_address));
                 String featureimage = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_featureImage));
@@ -109,9 +112,9 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                 nearByRestaurantslist.add(nearByRestaurants);
             }
             mView.showRestaurants(nearByRestaurantslist);
+            cursor.close();
         }
     }
-
 
 
     @Override
@@ -123,10 +126,11 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
     public void detachView() {
         mView = null;
     }
+
     @Override
     public void onAddFavorites(int position) {
-        ContentValues values= new ContentValues();
-        NearByRestaurants.Restaurant res=mRestaurantList.get(position).getRestaurant();
+        ContentValues values = new ContentValues();
+        NearByRestaurants.Restaurant res = mRestaurantList.get(position).getRestaurant();
         values.put(RestaurantFields.Column_restaurantId, res.getId());
         values.put(RestaurantFields.Column_name, res.getName());
         values.put(RestaurantFields.Column_address, res.getLocation().getAddress());
@@ -139,6 +143,6 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
     public void onRemoveFavorites(int position) {
         String selection = FavoriteFields.Column_restaurantId + "=?";
         String[] selectionArgs = new String[]{mRestaurantList.get(position).getRestaurant().getId()};
-        ((RestaurantListFragment)mView).getActivity().getContentResolver().delete(Constatnts.FAVORITES_URI, selection, selectionArgs);
+        ((RestaurantListFragment) mView).getActivity().getContentResolver().delete(Constatnts.FAVORITES_URI, selection, selectionArgs);
     }
 }
