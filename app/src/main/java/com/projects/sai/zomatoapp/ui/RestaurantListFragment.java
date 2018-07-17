@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.projects.sai.zomatoapp.MainActivity;
 import com.projects.sai.zomatoapp.R;
 import com.projects.sai.zomatoapp.model.NearByRestaurants;
 import com.projects.sai.zomatoapp.utilities.Utilities;
@@ -23,15 +24,29 @@ import butterknife.ButterKnife;
  * Created by sai on 28/06/2018.
  */
 
-public class RestaurantListFragment extends Fragment implements RestaurantListContract.view, RestaurantListAdapter.OnItemClickListener{
+public class RestaurantListFragment extends Fragment implements RestaurantListContract.view, RestaurantListAdapter.OnItemClickListener {
     private static String TAG = RestaurantListFragment.class.getSimpleName();
     private Boolean isOnline = true;
     @BindView(R.id.recyclerview_homescreen)
     RecyclerView mRecylerView;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    private ondatachangelistener dataChangeListener;
 
     private RestaurantListContract.presenter mPresenter;
+
+    public RestaurantListFragment() {
+        super();
+    }
+
+    public RestaurantListFragment(MainActivity.MyPagerAdapter myPagerAdapter) {
+        dataChangeListener = myPagerAdapter;
+
+    }
+
+    public interface ondatachangelistener {
+        void onFavoriteDataChange();
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,7 +77,7 @@ public class RestaurantListFragment extends Fragment implements RestaurantListCo
     @Override
     public void showRestaurants(ArrayList<NearByRestaurants> nearByRestaurantsList) {
         // Create an adapter and supply the data to be displayed.
-        RestaurantListAdapter rAdapter = new RestaurantListAdapter(nearByRestaurantsList);
+        RestaurantListAdapter rAdapter = new RestaurantListAdapter(nearByRestaurantsList, getActivity());
         rAdapter.setClickListener(this);
         // Connect the adapter with the recycler view.
         mRecylerView.setAdapter(rAdapter);
@@ -92,9 +107,11 @@ public class RestaurantListFragment extends Fragment implements RestaurantListCo
         switch (view.getId()) {
             case R.id.image_favorite_border:
                 mPresenter.onAddFavorites(position);
+                dataChangeListener.onFavoriteDataChange();
                 break;
             case R.id.image_favorite:
                 mPresenter.onRemoveFavorites(position);
+                dataChangeListener.onFavoriteDataChange();
                 break;
             default:
                 break;

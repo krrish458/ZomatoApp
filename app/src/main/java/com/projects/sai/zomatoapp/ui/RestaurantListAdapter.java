@@ -1,5 +1,6 @@
 package com.projects.sai.zomatoapp.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,8 @@ import com.projects.sai.zomatoapp.model.NearByRestaurants;
 import com.projects.sai.zomatoapp.model.localdatabase.FavoriteFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantProvider;
+import com.projects.sai.zomatoapp.model.realm.Favorites;
+import com.projects.sai.zomatoapp.model.realm.RealmController;
 import com.projects.sai.zomatoapp.utilities.Constatnts;
 import com.projects.sai.zomatoapp.utilities.Utilities;
 import com.squareup.picasso.Picasso;
@@ -24,6 +27,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 /**
  * Created by sai on 28/06/2018.
@@ -34,6 +38,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
     private Context mContext;
     private List<NearByRestaurants> mNearByRestaurantsList;
     private OnItemClickListener clickListener;
+    private Realm mRealm;
 
     public void setClickListener(OnItemClickListener clickListener) {
         this.clickListener = clickListener;
@@ -43,8 +48,9 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
         public void onClick(View view, int position);
     }
 
-    public RestaurantListAdapter(List<NearByRestaurants> mNearByRestaurantsList) {
+    public RestaurantListAdapter(List<NearByRestaurants> mNearByRestaurantsList, Activity activity) {
         this.mNearByRestaurantsList = mNearByRestaurantsList;
+        mRealm= RealmController.with(activity).getRealm();
     }
 
     @Override
@@ -95,16 +101,8 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
 
         public void bindData(NearByRestaurants.Restaurant restaurant) {
             //to set favorites button if restaurants already listed as favorite stored in database.
-            String selection = FavoriteFields.Column_restaurantId + "=?";
-            String[] selectionArgs = new String[]{restaurant.getId()};
-            Cursor cursor = mContext.getContentResolver()
-                    .query(Constatnts.FAVORITES_URI,
-                            Constatnts.PROJECTION,
-                            selection,
-                            selectionArgs,
-                            null,
-                            null);
-            if (cursor.getCount() > 0) {
+            int count = (int) mRealm.where(Favorites.class).equalTo("restaurant_id", restaurant.getId()).count();
+            if (count > 0) {
                 favorite_border.setVisibility(View.INVISIBLE);
                 favorite.setVisibility(View.VISIBLE);
             } else {
@@ -118,7 +116,7 @@ public class RestaurantListAdapter extends RecyclerView.Adapter <RestaurantListA
                     .load(restaurant.getFeatured_image())
                     .error(R.drawable.ic_placeholder)
                     .into(image_background);
-            cursor.close();
+
         }
 
 

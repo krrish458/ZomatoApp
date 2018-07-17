@@ -1,5 +1,6 @@
 package com.projects.sai.zomatoapp.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
@@ -11,11 +12,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.projects.sai.zomatoapp.R;
+import com.projects.sai.zomatoapp.model.localdatabase.FavoriteFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantFields;
+import com.projects.sai.zomatoapp.model.realm.Favorites;
+import com.projects.sai.zomatoapp.model.realm.RealmController;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static android.content.ContentValues.TAG;
 
@@ -25,23 +31,22 @@ import static android.content.ContentValues.TAG;
 
 public class FavouritesListAdapter extends RecyclerView.Adapter<FavouritesListAdapter.FavouritesViewHolder>  {
 
-    private final LayoutInflater mInflater;
+
     private Context mContext;
-    private Cursor mCursor=null;
+    private Realm mRealm;
 
-    public FavouritesListAdapter(Context mContext) {
-        this.mInflater = LayoutInflater.from(mContext);
-        this.mContext = mContext;
+    private static final String TAG=FavouritesListAdapter.class.getSimpleName();
+
+    public FavouritesListAdapter(Activity activity) {
+        this.mContext = activity;
+        mRealm= RealmController.with(activity).getRealm();
     }
 
-    public void setData(Cursor cursor) {
-        mCursor = cursor;
-        notifyDataSetChanged();
-    }
+
     @Override
     public FavouritesListAdapter.FavouritesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.
-                from(mContext).
+                from(parent.getContext()).
                 inflate(R.layout.restaurant_listitem, parent, false);
         return new FavouritesViewHolder(itemView);
     }
@@ -49,8 +54,15 @@ public class FavouritesListAdapter extends RecyclerView.Adapter<FavouritesListAd
     @Override
     public void onBindViewHolder(FavouritesListAdapter.FavouritesViewHolder holder, int position) {
 
+        if(mRealm!=null){
+            RealmResults<Favorites> results=mRealm.where(Favorites.class).findAllAsync();
+            Favorites fav=results.get(position);
+            Log.d(TAG,fav.getName());
+            holder.bindData(fav.getName(),fav.getAddress(),fav.getFeatureImage());
 
-        if (mCursor != null) {
+        }
+
+        /*if (mCursor != null) {
             if (mCursor.moveToPosition(position)) {
                 String name = mCursor.getString(mCursor.getColumnIndex(RestaurantFields.Column_name));
                 String address = mCursor.getString(mCursor.getColumnIndex(RestaurantFields.Column_address));
@@ -61,16 +73,14 @@ public class FavouritesListAdapter extends RecyclerView.Adapter<FavouritesListAd
             }
         } else {
             Log.e (TAG, "onBindViewHolder: Cursor is null.");
-        }
+        }*/
     }
 
     @Override
     public int getItemCount() {
-        if (mCursor != null) {
-            return mCursor.getCount();
-        } else {
-            return -1;
-        }
+
+            return (int) mRealm.where(Favorites.class).count();
+
     }
 
 

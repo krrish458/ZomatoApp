@@ -2,6 +2,7 @@ package com.projects.sai.zomatoapp.ui;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.projects.sai.zomatoapp.apiservices.RestaurantsApiService;
@@ -11,10 +12,16 @@ import com.projects.sai.zomatoapp.model.RestaurantCollection;
 import com.projects.sai.zomatoapp.model.localdatabase.FavoriteFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantFields;
 import com.projects.sai.zomatoapp.model.localdatabase.RestaurantProvider;
+import com.projects.sai.zomatoapp.model.realm.Favorites;
+import com.projects.sai.zomatoapp.model.realm.RealmController;
+import com.projects.sai.zomatoapp.model.realm.Restaurant;
 import com.projects.sai.zomatoapp.utilities.Constatnts;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,11 +31,11 @@ import retrofit2.Response;
  * Created by sai on 28/06/2018.
  */
 
-public class RestaurantListPresenter implements RestaurantListContract.presenter {
+public class RestaurantListPresenter implements RestaurantListContract.presenter  {
     private RestaurantsApiService mService;
     private RestaurantListContract.view mView;
     private ArrayList<NearByRestaurants> mRestaurantList;
-
+    private Realm mRealm;
 
     //method to consume nearbyrestaurant api services
     @Override
@@ -46,7 +53,6 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
                         SaveDataLocally();
                 }
             }
-
             @Override
             public void onFailure(Call<RestaurantCollection> call, Throwable t) {
                 Log.d("failure", "failure");
@@ -55,94 +61,89 @@ public class RestaurantListPresenter implements RestaurantListContract.presenter
     }
 
     private void SaveDataLocally() {
-        ContentValues values = new ContentValues();
-        for (NearByRestaurants nearByRestaurants : mRestaurantList) {
-            //restaurant object res to fetch the properties of restaurant object and inserted to content values.
-            NearByRestaurants.Restaurant res = nearByRestaurants.getRestaurant();
-            values.put(RestaurantFields.Column_restaurantId, res.getId());
-            values.put(RestaurantFields.Column_name, res.getName());
-            values.put(RestaurantFields.Column_address, res.getLocation().getAddress());
-            values.put(RestaurantFields.Column_featureImage, res.getFeatured_image());
-            ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(RestaurantProvider.Resturants.CONTENT_URI, values);
-        }
+
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                for(NearByRestaurants nearByRestaurants : mRestaurantList){
+                    NearByRestaurants.Restaurant res = nearByRestaurants.getRestaurant();
+                    Restaurant r= realm.createObject(Restaurant.class);
+                    r.setAddress(res.getLocation().getAddress());
+                    r.setName(res.getName());
+                    r.setFeatureImage(res.getFeatured_image());
+                    r.setRestaurant_id(res.getId());
+                }
+            }
+        });
     }
 
     private Boolean localDataExists() {
-
-        Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver().query(Constatnts.RESTAURANTS_URI, Constatnts.PROJECTION, null, null, null, null);
-        if (cursor.getCount() > 0) {
-            cursor.close();
+        long count= mRealm.where(Restaurant.class).count();
+        if(count>0)
             return true;
-
-        } else {
-            cursor.close();
+        else
             return false;
-        }
     }
 
 
     public void loadDataLocally() {
+        Log.d("loading offline data", "using realm");
         ArrayList<NearByRestaurants> nearByRestaurantslist = new ArrayList<>();
-        Cursor cursor = ((RestaurantListFragment) mView).getActivity().getContentResolver()
-                .query(Constatnts.RESTAURANTS_URI,
-                        Constatnts.PROJECTION,
-                        null,
-                        null,
-                        null,
-                        null);
+        RealmResults <Restaurant> results= mRealm.where(Restaurant.class).findAllAsync();
+        for(Restaurant r: results){
+            NearByRestaurants nearByRestaurants = new NearByRestaurants();
+            NearByRestaurants.Restaurant restaurant = new NearByRestaurants.Restaurant();
+            NearByRestaurants.Location location = new NearByRestaurants.Location();
+            restaurant.setName(r.getName());
+            restaurant.setFeatured_image(r.getFeatureImage());
+            restaurant.setId(r.getRestaurant_id());
+            location.setAddress(r.getAddress());
+            restaurant.setLocation(location);
+            nearByRestaurants.setRestaurant(restaurant);
+            nearByRestaurantslist.add(nearByRestaurants);
+        }
+        mView.showRestaurants(nearByRestaurantslist);
 
-        if (cursor == null) {
-        }
-        //if data is present in database then  populate an array list of type nearbyrestaurants and populate the recyclerview.
-        else {
-            while (cursor.moveToNext()) {
-                NearByRestaurants nearByRestaurants = new NearByRestaurants();
-                NearByRestaurants.Restaurant restaurant = new NearByRestaurants.Restaurant();
-                NearByRestaurants.Location location = new NearByRestaurants.Location();
-                String id = cursor.getString((cursor.getColumnIndex(RestaurantFields.Column_restaurantId)));
-                String name = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_name));
-                String address = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_address));
-                String featureimage = cursor.getString(cursor.getColumnIndex(RestaurantFields.Column_featureImage));
-                restaurant.setFeatured_image(featureimage);
-                restaurant.setName(name);
-                location.setAddress(address);
-                restaurant.setLocation(location);
-                restaurant.setId(id);
-                nearByRestaurants.setRestaurant(restaurant);
-                nearByRestaurantslist.add(nearByRestaurants);
-            }
-            mView.showRestaurants(nearByRestaurantslist);
-            cursor.close();
-        }
     }
 
 
     @Override
     public void attachView(RestaurantListContract.view view) {
         mView = view;
+        mRealm= RealmController.with((RestaurantListFragment)mView).getRealm();
     }
 
     @Override
     public void detachView() {
         mView = null;
+        mRealm.close();
     }
 
     @Override
     public void onAddFavorites(int position) {
-        ContentValues values = new ContentValues();
         NearByRestaurants.Restaurant res = mRestaurantList.get(position).getRestaurant();
-        values.put(RestaurantFields.Column_restaurantId, res.getId());
-        values.put(RestaurantFields.Column_name, res.getName());
-        values.put(RestaurantFields.Column_address, res.getLocation().getAddress());
-        values.put(RestaurantFields.Column_featureImage, res.getFeatured_image());
-        ((RestaurantListFragment) mView).getActivity().getContentResolver().insert(Constatnts.FAVORITES_URI, values);
+        Favorites favrealm= new Favorites();
+        favrealm.setRestaurant_id(res.getId());
+        favrealm.setFeatureImage(res.getFeatured_image());
+        favrealm.setAddress(res.getLocation().getAddress());
+        favrealm.setName(res.getName());
+        mRealm.beginTransaction();
+        mRealm.copyToRealm(favrealm);
+        mRealm.commitTransaction();
 
     }
 
     @Override
     public void onRemoveFavorites(int position) {
-        String selection = FavoriteFields.Column_restaurantId + "=?";
-        String[] selectionArgs = new String[]{mRestaurantList.get(position).getRestaurant().getId()};
-        ((RestaurantListFragment) mView).getActivity().getContentResolver().delete(Constatnts.FAVORITES_URI, selection, selectionArgs);
+        NearByRestaurants.Restaurant res = mRestaurantList.get(position).getRestaurant();
+        String id=res.getId();
+        RealmResults<Favorites> results=mRealm.where(Favorites.class).findAllAsync();
+        Favorites fav=results.where().equalTo("restaurant_id",id).findFirst();
+        if(!mRealm.isInTransaction())
+            mRealm.beginTransaction();
+            fav.deleteFromRealm();
+        mRealm.commitTransaction();
     }
+
+
 }
